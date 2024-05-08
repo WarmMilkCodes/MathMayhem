@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="displayName" style="position: absolute; top: 10px; right: 10px;"></div>
+    <div id="main-menu">
+        <h1>Multiplayer Math Game</h1>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <button id="setNameButton">Set Name</button>
+        <button id="joinGameButton">Join Game</button>
+    </div>
+
+    <div id="game" style="display:none;">
+        <h2>Math Problems</h2>
+        <div id="problem"></div>
+        <input type="text" id="answer" placeholder="Your answer">
+        <button id="submitAnswerButton">Submit Answer</button>
+    </div>
+
+    <div id="lobby">
+        <h2>Lobby</h2>
+        <ul id="playersList">
+            <!-- Dynamically filled with players -->
+        </ul>
+    </div>
+
+    <div id="scoreboard" style="display:none;">
+        <h2>Scoreboard</h2>
+        <table id="scoreTable">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Player scores will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

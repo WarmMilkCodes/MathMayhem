@@ -1,0 +1,76 @@
+/* General body styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main menu styling */
+#main-menu {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Styling for input fields */
+input[type="text"] {
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+}
+
+#displayName {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #007BFF;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+/* Button styling */
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Lobby styles */
+#lobby {
+    text-align: center;
+}
+
+/* Game area styling */
+#game {
+    display: none; /* Initially hidden until game starts */
+    text-align: center;
+}
+
+/* Scoreboard styling */
+#scoreboard {
+    text-align: center;
+    display: none; /* Initially hidden until game ends */
+}
