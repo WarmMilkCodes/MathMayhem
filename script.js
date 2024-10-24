@@ -1,121 +1,174 @@
+// public/script.js
+
 document.addEventListener('DOMContentLoaded', () => {
+    const socket = io();
+
+    // DOM Elements
     const mainMenu = document.getElementById('main-menu');
+    const lobby = document.getElementById('lobby');
     const gameSection = document.getElementById('game');
+    const scoreboard = document.getElementById('scoreboard');
     const playerNameInput = document.getElementById('playerName');
-    const setNameButton = document.getElementById('setNameButton');
-    const displayName = document.getElementById('displayName');
     const joinGameButton = document.getElementById('joinGameButton');
+    const displayName = document.getElementById('displayName');
     const problemContainer = document.getElementById('problem');
     const answerInput = document.getElementById('answer');
     const submitAnswerButton = document.getElementById('submitAnswerButton');
+    const playersList = document.getElementById('playersList');
+    const playersListGame = document.getElementById('playersListGame');
+    const timerDisplay = document.getElementById('time');
+    const countdownDisplay = document.getElementById('countdown');
+    const feedback = document.getElementById('feedback');
+    const scoreTableBody = document.getElementById('scoreTable').getElementsByTagName('tbody')[0];
+    const errorMessage = document.getElementById('error');
+    const playAgainButton = document.getElementById('playAgainButton');
 
     let playerName = '';
-    let currentProblemIndex = 0;
-    let score = 0;
-    let problems = [];
-    let countdownTimer = null;
+    let hasAnswered = false;
 
-    let players = [
-        { name: 'Player 1', score: 0 },
-        { name: 'Player 2', score: 0 }
-    ];
-
-    function setPlayerName() {
-        playerName = playerNameInput.value;
-        console.log(`Player name set to: ${playerName}`);
+    // Event Listeners
+    joinGameButton.addEventListener('click', () => {
+        const name = playerNameInput.value.trim();
+        if (name === '') {
+            displayError('Please enter a valid name.');
+            return;
+        }
+        playerName = name;
+        socket.emit('joinGame', playerName);
         displayName.textContent = `Player: ${playerName}`;
-    }
-
-    function joinGame() {
-        console.log(`${playerName} is trying to join a game...`);
-        players.push({ name: playerName, score: 0});
-        updatePlayerList();
-        fetchOrCreateLobby();
-    }
-
-    function fetchOrCreateLobby() {
-        console.log('Fetching or creating a lobby...');
-        if (players.length === 1) {
-            console.log("Waiting for additional players...");
-        } else if (players.length === 2) {
-            startCountdown(10);
-        }
-    }
-
-    function startGame() {
-        console.log('Starting game...');
-    if (players.length >= 2) {
         mainMenu.style.display = 'none';
-        gameSection.style.display = 'block';
-        problems = generateMathProblems(5);
-        displayNextProblem();
-    } else {
-        displayName.textContent = 'Not enough players to start the game.';
-        }
-    }
+        lobby.style.display = 'block';
+    });
 
-    function updatePlayerList() {
+    submitAnswerButton.addEventListener('click', () => {
+        if (hasAnswered) {
+            feedback.textContent = 'You have already answered this question.';
+            return;
+        }
+
+        const answer = answerInput.value.trim();
+        if (answer === '') {
+            feedback.textContent = 'Please enter an answer.';
+            return;
+        }
+
+        if (isNaN(answer)) {
+            feedback.textContent = 'Please enter a numeric answer.';
+            return;
+        }
+
+        // Submit the answer to the server
+        socket.emit('submitAnswer', { problem: currentProblem, answer: Number(answer) });
+        hasAnswered = true;
+        feedback.textContent = 'Answer submitted!';
+        submitAnswerButton.disabled = true;
+    });
+
+    playAgainButton.addEventListener('click', () => {
+        // Reload the page to start a new game
+        window.location.reload();
+    });
+
+    // Socket.io Event Handlers
+
+    // Handle error messages
+    socket.on('errorMessage', (msg) => {
+        displayError(msg);
+    });
+
+    // Update player list in lobby
+    socket.on('updatePlayerList', (playerNames) => {
         playersList.innerHTML = '';
-        players.forEach(player => {
-            const playerItem = document.createElement('li');
-            playerItem.textContent = player.name;
-            playersList.appendChild(playerItem)
+        playerNames.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = name;
+            playersList.appendChild(li);
         });
-    }
+    });
 
-    function generateMathProblems(numberOfProblems) {
-        const operations = ['+', '-', '*'];
-        for (let i = 0; i < numberOfProblems; i++) {
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const operation = operations[Math.floor(Math.random() * operations.length)];
-            const answer = eval(`${num1} ${operation} ${num2}`);
-            problems.push({ problem: `${num1} ${operation} ${num2}`, answer: answer });
-        }
-        return problems;
-    }
+    // Handle countdown before game starts
+    socket.on('countdown', (remainingTime) => {
+        lobby.style.display = 'block';
+        gameSection.style.display = 'none';
+        countdownDisplay.textContent = `Game starts in: ${remainingTime}s`;
+    });
 
-    function displayNextProblem() {
-        if (currentProblemIndex < problems.length) {
-            problemContainer.textContent = problems[currentProblemIndex].problem;
+    // Handle game start
+    socket.on('gameStarted', (data) => {
+        lobby.style.display = 'none';
+        gameSection.style.display = 'block';
+        scoreboard.style.display = 'none';
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitAnswerButton.disabled = false;
+        feedback.textContent = '';
+        hasAnswered = false;
+
+        // Display the first problem
+        problemContainer.textContent = data.problem;
+        currentProblem = data.problem;
+    });
+
+    // Update game timer
+    socket.on('gameTimer', (remainingTime) => {
+        timerDisplay.textContent = remainingTime;
+    });
+
+    // Handle new problem
+    socket.on('newProblem', (problem) => {
+        problemContainer.textContent = problem.problem;
+        currentProblem = problem.problem;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitAnswerButton.disabled = false;
+        feedback.textContent = '';
+        hasAnswered = false;
+    });
+
+    // Handle answer result
+    socket.on('answerResult', (data) => {
+        if (data.correct) {
+            feedback.textContent = 'Correct!';
+            feedback.style.color = 'green';
         } else {
-            console.log('Game over!');
-            console.log(`Final score: ${score}`);
-            displayScore();
+            feedback.textContent = `Wrong! Correct Answer: ${data.correctAnswer}`;
+            feedback.style.color = 'red';
         }
-    }
+    });
 
-    function submitAnswer() {
-        const userAnswer = Number(answerInput.value);
-        if (userAnswer === problems[currentProblemIndex].answer) {
-            console.log('Correct answer!');
-            players[0].score++; // Assume current player is Player 1
-        } else {
-            console.log('Wrong answer!');
-        }
-        currentProblemIndex++;
-        displayNextProblem();
+    // Handle game over and display leaderboard
+    socket.on('gameOver', (leaderboard) => {
+        gameSection.style.display = 'none';
+        scoreboard.style.display = 'block';
+        scoreTableBody.innerHTML = '';
 
-        answerInput.value = ''; // Clear the input box after submitting the answer
-    }
-
-    function displayScore() {
-        const scoreboard = document.getElementById('scoreboard');
-        const scoreTableBody = document.getElementById('scoreTable').getElementsByTagName('tbody')[0];
-        scoreTableBody.innerHTML = '';  // Clear existing rows
-
-        players.forEach(player => {
-            let row = scoreTableBody.insertRow();
-            let cell1 = row.insertCell(0);
-            let cell2 = row.insertCell(1);
-            cell1.textContent = player.name;
-            cell2.textContent = player.score;
+        leaderboard.forEach(player => {
+            const row = scoreTableBody.insertRow();
+            const nameCell = row.insertCell(0);
+            const scoreCell = row.insertCell(1);
+            nameCell.textContent = player.name;
+            scoreCell.textContent = player.score;
         });
+    });
 
-        scoreboard.style.display = 'block';  // Show scoreboard
+    // Update player list in game section
+    socket.on('updatePlayerList', (playerNames) => {
+        playersListGame.innerHTML = '';
+        playerNames.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = name;
+            playersListGame.appendChild(li);
+        });
+    });
+
+    // Utility Functions
+    function displayError(msg) {
+        errorMessage.textContent = msg;
+        setTimeout(() => {
+            errorMessage.textContent = '';
+        }, 3000);
     }
 
-    setNameButton.addEventListener('click', setPlayerName);
-    joinGameButton.addEventListener('click', joinGame);
-    submitAnswerButton.addEventListener('click', submitAnswer);
+    // Variable to store the current problem
+    let currentProblem = null;
 });
