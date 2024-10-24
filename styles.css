@@ -1,76 +1,87 @@
-/* General body styles */
+/* public/styles.css */
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f8ff;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
-/* Main menu styling */
-#main-menu {
-    text-align: center;
+#main-menu, #lobby, #game, #scoreboard {
+    margin-top: 50px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 200px;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#problem {
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+#timer {
+    font-size: 20px;
     margin-bottom: 20px;
 }
 
-/* Styling for input fields */
-input[type="text"] {
-    padding: 10px;
-    margin: 10px 0;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    width: 300px;
+#playersListContainer {
+    display: inline-block;
+    text-align: left;
+    margin-left: 20px;
 }
 
-#displayName {
+#playersList, #playersListGame {
+    list-style-type: none;
+    padding: 0;
+}
+
+#scoreTable {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 50%;
+}
+
+#scoreTable th, #scoreTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#scoreTable th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.player-info {
     position: absolute;
     top: 10px;
     right: 10px;
-    color: #007BFF;
     font-size: 18px;
     font-weight: bold;
 }
 
-
-/* Button styling */
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+.error-message {
+    color: red;
+    margin-top: 20px;
 }
 
-button:hover {
-    background-color: #0056b3;
+#feedback {
+    margin-top: 10px;
+    font-size: 18px;
+    height: 24px; /* Reserve space */
 }
 
 button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
-
-/* Lobby styles */
-#lobby {
-    text-align: center;
-}
-
-/* Game area styling */
-#game {
-    display: none; /* Initially hidden until game starts */
-    text-align: center;
-}
-
-/* Scoreboard styling */
-#scoreboard {
-    text-align: center;
-    display: none; /* Initially hidden until game ends */
 }
