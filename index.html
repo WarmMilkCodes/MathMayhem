@@ -1,37 +1,49 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Game</title>
+    <title>Multiplayer Math Race</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
 </head>
 <body>
-    <div id="displayName" style="position: absolute; top: 10px; right: 10px;"></div>
+    <div id="displayName" class="player-info"></div>
+
     <div id="main-menu">
-        <h1>Multiplayer Math Game</h1>
+        <h1>Multiplayer Math Race</h1>
         <input type="text" id="playerName" placeholder="Enter your name">
-        <button id="setNameButton">Set Name</button>
         <button id="joinGameButton">Join Game</button>
     </div>
 
-    <div id="game" style="display:none;">
-        <h2>Math Problems</h2>
-        <div id="problem"></div>
-        <input type="text" id="answer" placeholder="Your answer">
-        <button id="submitAnswerButton">Submit Answer</button>
-    </div>
-
-    <div id="lobby">
+    <div id="lobby" style="display:none;">
         <h2>Lobby</h2>
+        <p>Waiting for more players to join...</p>
         <ul id="playersList">
             <!-- Dynamically filled with players -->
         </ul>
+        <p id="countdown"></p>
+    </div>
+
+    <div id="game" style="display:none;">
+        <div class="game-header">
+            <div id="timer">Time Left: <span id="time">120</span>s</div>
+            <div id="playersListContainer">
+                <h3>Players:</h3>
+                <ul id="playersListGame">
+                    <!-- Dynamically filled with players -->
+                </ul>
+            </div>
+        </div>
+        <h2>Solve the Problem:</h2>
+        <div id="problem"></div>
+        <input type="text" id="answer" placeholder="Your answer">
+        <button id="submitAnswerButton">Submit Answer</button>
+        <div id="feedback"></div>
     </div>
 
     <div id="scoreboard" style="display:none;">
-        <h2>Scoreboard</h2>
+        <h2>Game Over! Leaderboard</h2>
         <table id="scoreTable">
             <thead>
                 <tr>
@@ -43,6 +55,14 @@
                 <!-- Player scores will be inserted here -->
             </tbody>
         </table>
+        <button id="playAgainButton">Play Again</button>
     </div>
+
+    <div id="error" class="error-message"></div>
+
+    <!-- Socket.io Client Library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Your Custom Script -->
+    <script src="script.js"></script>
 </body>
 </html>
